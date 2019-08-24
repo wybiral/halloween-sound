@@ -1,6 +1,11 @@
 <html>
 <head>
 <script>
+const modes = [
+    [[724.70, 0.12], [735.30, 0.25], [745.90, 0.6], [756.50, 1.5], [767.10, 0.5], [777.70, 0.6], [788.30, 0.3]],
+    [[642.82, 0.30], [652.08, 0.90], [661.20, 0.6], [670.50, 2.2], [679.80, 1.1], [689.10, 0.6], [698.30, 0.3]],
+];
+
 function addComponent(ctx, out, freq, level) {
     const osc = ctx.createOscillator();
     osc.type = 'sine';
@@ -13,15 +18,10 @@ function addComponent(ctx, out, freq, level) {
     return osc;
 }
 
-const modes = [
-    [[724.70, 0.12], [735.30, 0.25], [745.90, 0.6], [756.50, 1.5], [767.10, 0.5], [777.70, 0.6], [788.30, 0.3]],
-    [[642.82, 0.30], [652.08, 0.90], [661.20, 0.6], [670.50, 2.2], [679.80, 1.1], [689.10, 0.6], [698.30, 0.3]],
-];
-
-window.onload = () => {
+function start() {
     const ctx = new AudioContext();
     const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.5, ctx.currentTime);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
     const comps = [];
     modes[0].forEach(x => {
         comps.push(addComponent(ctx, gain, x[0], x[1]));
@@ -35,7 +35,14 @@ window.onload = () => {
         });
     }, 2500);
     gain.connect(ctx.destination);
+}
+
+window.onload = () => {
+    document.getElementById('play').onclick = start;
 };
 </script>
 </head>
+<body>
+<button id="play">Play</button>
+</body>
 </html>
