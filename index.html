@@ -1,0 +1,41 @@
+<html>
+<head>
+<script>
+function addComponent(ctx, out, freq, level) {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(level, ctx.currentTime);
+    osc.connect(gain);
+    gain.connect(out);
+    osc.start();
+    return osc;
+}
+
+const modes = [
+    [[724.70, 0.12], [735.30, 0.25], [745.90, 0.6], [756.50, 1.5], [767.10, 0.5], [777.70, 0.6], [788.30, 0.3]],
+    [[642.82, 0.30], [652.08, 0.90], [661.20, 0.6], [670.50, 2.2], [679.80, 1.1], [689.10, 0.6], [698.30, 0.3]],
+];
+
+window.onload = () => {
+    const ctx = new AudioContext();
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.5, ctx.currentTime);
+    const comps = [];
+    modes[0].forEach(x => {
+        comps.push(addComponent(ctx, gain, x[0], x[1]));
+    });
+    let m = 0;
+    setInterval(() => {
+        m = (m + 1) % modes.length;
+        comps.forEach((c, i) => {
+            const t = ctx.currentTime + 0.5;
+            c.frequency.linearRampToValueAtTime(modes[m][i][0], t);
+        });
+    }, 2500);
+    gain.connect(ctx.destination);
+};
+</script>
+</head>
+</html>
